@@ -41,10 +41,10 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-    //TODO reinterpret cast seems ugly
+	//TODO reinterpret cast seems ugly
 	current_area = reinterpret_cast<area*>(new FIRST_AREA());
 	if(!current_area) {
-		fprintf(stderr, "failed to create bouncer object!\n");
+		fprintf(stderr, "failed to create current area!\n");
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
@@ -63,33 +63,28 @@ int main(int argc, char** argv)
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
-    al_set_target_bitmap(al_get_backbuffer(display));
+	al_set_target_bitmap(al_get_backbuffer(display));
 	al_clear_to_color(al_map_rgb(0,0,0));
 	al_flip_display();
 
 	al_start_timer(timer);
 
-	while(!doexit)
-	{
+	while(!doexit) {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
 		if(ev.type == ALLEGRO_EVENT_TIMER) {
-			if(key_status.key_up) {
+			if(key_status.key_up)
 				current_area->key_hold_up();
-			}
 
-			if(key_status.key_down) {
+			if(key_status.key_down)
 				current_area->key_hold_down();
-			}
 
-			if(key_status.key_left) {
+			if(key_status.key_left)
 				current_area->key_hold_left();
-			}
 
-			if(key_status.key_right) {
+			if(key_status.key_right)
 				current_area->key_hold_right();
-			}
 
 			redraw = true;
 		}
@@ -169,7 +164,6 @@ int main(int argc, char** argv)
 
 		if(redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
-
 			current_area->draw();
 		}
 	}
@@ -185,7 +179,7 @@ return 0;
 //Area common functionality
 void area::init()
 {
-    objectlist=NULL;
+	objectlist=NULL;
 };
 
 area::~area()
@@ -205,7 +199,7 @@ object* area::new_object(ALLEGRO_BITMAP* sprite, int x, int y, int w, int h)
 	objectll* newobjectlist = new objectll();
 	if(newobjectlist) {
 		newobject = new object();
-		if(newobject){
+		if(newobject) {
 			newobject->sprite = sprite;
 			newobject->x = x;
 			newobject->y = y;
@@ -236,8 +230,8 @@ void area::draw()
 
 //Object common functionality
 object::object() : 
-    spriteflags(0),
-    sprite(NULL),
+	spriteflags(0),
+	sprite(NULL),
 	bx(0), by(0), bw(0), bh(0),
 	x(0), y(0), w(0), h(0)
 {}
@@ -267,20 +261,20 @@ void object::draw()
 //Misc functions
 bool key_get_hold_up()
 {
-    return key_status.key_up;
+	return key_status.key_up;
 }
 
 bool key_get_hold_down()
 {
-    return key_status.key_down;
+	return key_status.key_down;
 }
 
 bool key_get_hold_left()
 {
-    return key_status.key_left;
+	return key_status.key_left;
 }
 
 bool key_get_hold_right()
 {
-    return key_status.key_right;
+	return key_status.key_right;
 }
