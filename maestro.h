@@ -47,8 +47,6 @@ public:
 	//The object with the smallest value is drawn on top
 	void set_depth(int depth);
 	int get_depth();
-	////Check if object will collide with something at x and y:
-	bool check_collision_at_point(int x, int y);
 	////Draw event for object (overridable):
 	//Default implementation draws sprite at x,y
 	//Can be toggled using "visible" attribute
@@ -78,6 +76,8 @@ public:
 	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
 	////Delete existing object in area
 	void del_object(object*);
+	////Check if object will collide with something at x and y:
+	bool check_collision_at_point(object*, int x, int y);
 	////Should never be called directly
 	//Called by set_depth to refresh an object the draw order
 	void refresh_object_in_draw_order(object*);
