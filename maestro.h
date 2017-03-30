@@ -20,7 +20,7 @@ bool key_get_hold_other();
 //screen size functions:
 int get_screen_h();
 int get_screen_w();
-int set_screen_size(int w, int h);
+void set_screen_size(int w, int h);
 
 ////Object base, can be used or overrided
 class object {
@@ -39,6 +39,7 @@ public:
 	////Constructors:
 	object();
 	object(int x, int y, ALLEGRO_BITMAP* sprite);
+    virtual ~object(){};
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
@@ -69,7 +70,7 @@ public:
 	////Viewport co-ordinates, size is determined by screen size
 	int viewx, viewy; //default is 0,0
 
-	~area();
+	virtual ~area();
 
 	////Initializes attributes, should be called first in constructor
 	void init();
