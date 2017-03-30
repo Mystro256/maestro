@@ -270,19 +270,41 @@ bool key_get_hold_other()
 //screen size functions:
 int get_screen_w()
 {
-	//TODO, static for now
 	return SCREEN_W;
 }
 
 int get_screen_h()
 {
-	//TODO, static for now
 	return SCREEN_H;
 }
 
-void set_screen_size(int w, int h)
+//screen scale functions:
+void set_screen_scale(float scalefactor);
 {
 	//TODO not implemented
+}
+
+float get_screen_scale();
+{
+	//TODO, static for now
+	return SCREEN_S;
+}
+
+//fullscreen functions:
+void set_fullscreen(bool value);
+{
+	//TODO not implemented
+}
+
+void toggle_fullscreen();
+{
+	//TODO not implemented
+}
+
+bool get_fullscreen();
+{
+	//TODO, static for now
+	return SCREEN_F;
 }
 
 //Object common functionality
