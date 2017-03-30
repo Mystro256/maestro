@@ -226,6 +226,118 @@ int main(int argc, char** argv)
 return 0;
 }
 
+//Misc functions
+bool key_get_hold_up()
+{
+	return key_status.key_up;
+}
+
+bool key_get_hold_down()
+{
+	return key_status.key_down;
+}
+
+bool key_get_hold_left()
+{
+	return key_status.key_left;
+}
+
+bool key_get_hold_right()
+{
+	return key_status.key_right;
+}
+
+bool key_get_hold_accept()
+{
+	return key_status.key_accept;
+}
+
+bool key_get_hold_cancel()
+{
+	return key_status.key_cancel;
+}
+
+bool key_get_hold_menu()
+{
+	return key_status.key_menu;
+}
+
+bool key_get_hold_other()
+{
+	return key_status.key_other;
+}
+
+//screen size functions:
+int get_screen_w()
+{
+	//TODO, static for now
+	return SCREEN_W;
+}
+
+int get_screen_h()
+{
+	//TODO, static for now
+	return SCREEN_H;
+}
+
+void set_screen_size(int w, int h)
+{
+	//TODO not implemented
+}
+
+//Object common functionality
+object::object() :
+	spriteflags(0), depth(0),
+	sprite(NULL), x(0), y(0),
+	visible(true), solid(true),
+	bx(0), by(0), bw(0), bh(0)
+{}
+
+object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
+	spriteflags(0), depth(0),
+	sprite(sprite), x(x), y(y),
+	visible(true), solid(true),
+	bx(0), by(0)
+{
+	if(sprite) {
+		bw = al_get_bitmap_width(sprite);
+		bh = al_get_bitmap_height(sprite);
+	} else {
+		bw = 0;
+		bh = 0;
+	}
+}
+
+void object::sprite_horz_flip()
+{
+	if(sprite)
+		spriteflags ^= (int) ALLEGRO_FLIP_HORIZONTAL;
+}
+
+void object::sprite_vert_flip()
+{
+	if(sprite)
+		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
+}
+
+void object::set_depth(int newdepth)
+{
+	depth = newdepth;
+	refresh_object_in_draw_order(&this);
+}
+
+int object::get_depth()
+{
+	return depth;
+}
+
+//Object default functionality
+void object::draw()
+{
+	if(sprite)
+		al_draw_bitmap(sprite, x, y, spriteflags);
+}
+
 //Area common functionality
 void area::init()
 {
@@ -292,116 +404,4 @@ void area::draw()
 		list = list->next;
 	}
 	al_flip_display();
-}
-
-//Object common functionality
-object::object() :
-	spriteflags(0), depth(0),
-	sprite(NULL), x(0), y(0),
-	visible(true), solid(true),
-	bx(0), by(0), bw(0), bh(0)
-{}
-
-object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
-	spriteflags(0), depth(0),
-	sprite(sprite), x(x), y(y),
-	visible(true), solid(true),
-	bx(0), by(0)
-{
-	if(sprite) {
-		bw = al_get_bitmap_width(sprite);
-		bh = al_get_bitmap_height(sprite);
-	} else {
-		bw = 0;
-		bh = 0;
-	}
-}
-
-void object::sprite_horz_flip()
-{
-	if(sprite)
-		spriteflags ^= (int) ALLEGRO_FLIP_HORIZONTAL;
-}
-
-void object::sprite_vert_flip()
-{
-	if(sprite)
-		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
-}
-
-void object::set_depth(int newdepth)
-{
-	depth = newdepth;
-	refresh_object_in_draw_order(&this);
-}
-
-int object::get_depth()
-{
-	return depth;
-}
-
-//Object default functionality
-void object::draw()
-{
-	if(sprite)
-		al_draw_bitmap(sprite, x, y, spriteflags);
-}
-
-//Misc functions
-bool key_get_hold_up()
-{
-	return key_status.key_up;
-}
-
-bool key_get_hold_down()
-{
-	return key_status.key_down;
-}
-
-bool key_get_hold_left()
-{
-	return key_status.key_left;
-}
-
-bool key_get_hold_right()
-{
-	return key_status.key_right;
-}
-
-bool key_get_hold_accept()
-{
-	return key_status.key_accept;
-}
-
-bool key_get_hold_cancel()
-{
-	return key_status.key_cancel;
-}
-
-bool key_get_hold_menu()
-{
-	return key_status.key_menu;
-}
-
-bool key_get_hold_other()
-{
-	return key_status.key_other;
-}
-
-//screen size functions:
-int get_screen_w()
-{
-	//TODO, static for now
-	return SCREEN_W;
-}
-
-int get_screen_h()
-{
-	//TODO, static for now
-	return SCREEN_H;
-}
-
-void set_screen_size(int w, int h)
-{
-	//TODO not implemented
 }
