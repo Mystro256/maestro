@@ -1,5 +1,5 @@
 CXX=g++
-CFLAGS=
+CFLAGS=-Wall
 LDFLAGS=-lallegro
 INCLUDE=-I. -I/usr/include
 OUT=game
