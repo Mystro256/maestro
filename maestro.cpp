@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
 	ALLEGRO_TIMER* timer = NULL;
 	bool redraw = true;
-	bool doexit = false;
+	unsigned int holdesc = 0;
 
 	if(!al_init()) {
 		fprintf(stderr, "failed to initialize allegro!\n");
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 	al_start_timer(timer);
 
-	while(!doexit) {
+	while(holdesc < FPS) {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
@@ -154,6 +154,10 @@ int main(int argc, char** argv)
 					key_status.key_other = true;
 					current_area->key_press_other();
 				break;
+
+				case ALLEGRO_KEY_ESCAPE:
+					holdesc++;
+				break;
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
@@ -182,10 +186,6 @@ int main(int argc, char** argv)
 					current_area->key_release_right();
 				break;
 
-				case ALLEGRO_KEY_ESCAPE:
-					doexit = true;
-				break;
-
 				case ALLEGRO_KEY_ENTER:
 				case ALLEGRO_KEY_SPACE:
 					key_status.key_accept = false;
@@ -209,10 +209,20 @@ int main(int argc, char** argv)
 					current_area->key_release_other();
 				break;
 				//TODO customize mapping
+
+				case ALLEGRO_KEY_ESCAPE:
+					holdesc = 0;
+				break;
+
+				case ALLEGRO_KEY_F4:
+				case ALLEGRO_KEY_F11:
+					toggle_fullscreen();
+				break;
 			}
 		}
 
 		if(redraw && al_is_event_queue_empty(event_queue)) {
+			//TODO print some text when holdesc > 0
 			redraw = false;
 			current_area->draw();
 		}
@@ -279,6 +289,7 @@ int get_screen_h()
 }
 
 //screen scale functions:
+//TODO save these changes
 void set_screen_scale(float scalefactor);
 {
 	//TODO not implemented
@@ -291,6 +302,7 @@ float get_screen_scale();
 }
 
 //fullscreen functions:
+//TODO save these changes
 void set_fullscreen(bool value);
 {
 	//TODO not implemented
