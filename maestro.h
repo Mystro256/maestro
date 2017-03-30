@@ -9,7 +9,7 @@ const float SCREEN_S = 1.0;
 //Default fullscreen value
 const bool SCREEN_F = true;
 ////Target Screen refresh rate
-const float FPS = 60;
+const unsigned int FPS = 60;
 
 ////Misc functions
 //check if key is held:
