@@ -230,6 +230,8 @@ return 0;
 void area::init()
 {
 	objectlist=NULL;
+	viewx = 0;
+	viewy = 0;
 };
 
 area::~area()
@@ -245,6 +247,7 @@ area::~area()
 
 object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite)
 {
+	//TODO allow specifying depth, and automically sort the object list by depth
 	object* newobject = NULL;
 	objectll* newobjectlist = new objectll();
 	if(newobjectlist) {
@@ -260,7 +263,18 @@ object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite)
 	return newobject;
 }
 
-void del_object(object*)
+void area::del_object(object* obj)
+{
+	//TODO not implemented
+}
+
+bool area::check_collision_at_point(object* obj, int x, int y)
+{
+	//TODO not implemented
+	return false;
+}
+
+void area::refresh_object_in_draw_order(object* obj)
 {
 	//TODO not implemented
 }
@@ -268,6 +282,7 @@ void del_object(object*)
 //Area default functionality
 void area::draw()
 {
+	//TODO use viewx/y, draw only what's in the viewport
 	al_clear_to_color(al_map_rgb(255,255,255));
 
 	objectll* list = objectlist;
@@ -312,6 +327,17 @@ void object::sprite_vert_flip()
 {
 	if(sprite)
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
+}
+
+void object::set_depth(int newdepth)
+{
+	depth = newdepth;
+	refresh_object_in_draw_order(&this);
+}
+
+int object::get_depth()
+{
+	return depth;
 }
 
 //Object default functionality
