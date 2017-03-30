@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 
-////Default screen size
+////Screen render size
 const int SCREEN_W = 640;
 const int SCREEN_H = 480;
+//Default Scale factor, not used in fullscreen
+const float SCREEN_S = 1.0;
+//Default fullscreen value
+const bool SCREEN_F = true;
 ////Target Screen refresh rate
 const float FPS = 60;
 
@@ -17,16 +21,23 @@ bool key_get_hold_accept();
 bool key_get_hold_cancel();
 bool key_get_hold_menu();
 bool key_get_hold_other();
-//screen size functions:
+//screen render size functions:
 int get_screen_h();
 int get_screen_w();
-void set_screen_size(int w, int h);
+//screen scale functions:
+void set_screen_scale(float scalefactor);
+float get_screen_scale();
+//fullscreen functions:
+void set_fullscreen(bool value);
+void toggle_fullscreen();
+bool get_fullscreen();
 
 ////Object base, can be used or overrided
 class object {
 private:
 	int spriteflags; //for allegro
 	int depth; //draw depth, use "set_depth" to change, default is 0
+	//TODO sprite animation and tiling
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL
 	int x, y; //object location, default is 0,0
