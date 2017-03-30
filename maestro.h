@@ -36,16 +36,16 @@ public:
 	int bx, by; //offset from x and y position, default is 0,0
 	unsigned int bw, bh; //size of box, default is size of initial sprite or 0,0
 
-	////Constructors:
+	////Constructors/Destructor:
 	object();
 	object(int x, int y, ALLEGRO_BITMAP* sprite);
-    virtual ~object(){};
+	virtual ~object(){};
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
 	////Set/get draw depth:
 	//The object with the smallest value is drawn on top
-	void set_depth(int);
+	void set_depth(int depth);
 	int get_depth();
 	////Check if object will collide with something at x and y:
 	bool check_collision_at_point(int x, int y);
@@ -78,6 +78,9 @@ public:
 	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
 	////Delete existing object in area
 	void del_object(object*);
+	////Should never be called directly
+	//Called by set_depth to refresh an object the draw order
+	void refresh_object_in_draw_order(object*);
 	////Draw event for area (overridable):
 	//Default implementation calls all visible object draw events
 	virtual void draw();
