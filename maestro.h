@@ -75,7 +75,7 @@ public:
 	////Initializes attributes, should be called first in constructor
 	void init();
 	////Add new object to area, sprite is optional
-	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite);
+	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
 	////Delete existing object in area
 	void del_object(object*);
 	////Draw event for area (overridable):

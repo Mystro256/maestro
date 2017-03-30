@@ -7,8 +7,16 @@ struct holdable_keys {
 	bool key_down;
 	bool key_left;
 	bool key_right;
+	bool key_accept;
+	bool key_cancel;
+	bool key_menu;
+	bool key_other;
 };
-holdable_keys key_status = { false, false, false, false };
+
+holdable_keys key_status = {
+	false, false, false, false,
+	false, false, false, false
+};
 
 int main(int argc, char** argv)
 {
@@ -76,15 +84,22 @@ int main(int argc, char** argv)
 		if(ev.type == ALLEGRO_EVENT_TIMER) {
 			if(key_status.key_up)
 				current_area->key_hold_up();
-
 			if(key_status.key_down)
 				current_area->key_hold_down();
-
 			if(key_status.key_left)
 				current_area->key_hold_left();
-
 			if(key_status.key_right)
 				current_area->key_hold_right();
+			if(key_status.key_accept)
+				current_area->key_hold_accept();
+			if(key_status.key_cancel)
+				current_area->key_hold_cancel();
+			if(key_status.key_menu)
+				current_area->key_hold_menu();
+			if(key_status.key_other)
+				current_area->key_hold_other();
+
+			current_area->loop();
 
 			redraw = true;
 		}
@@ -96,21 +111,48 @@ int main(int argc, char** argv)
 				case ALLEGRO_KEY_UP:
 				case ALLEGRO_KEY_W:
 					key_status.key_up = true;
+					current_area->key_press_up();
 				break;
 
 				case ALLEGRO_KEY_DOWN:
 				case ALLEGRO_KEY_S:
 					key_status.key_down = true;
+					current_area->key_press_down();
 				break;
 
 				case ALLEGRO_KEY_LEFT:
 				case ALLEGRO_KEY_A:
 					key_status.key_left = true;
+					current_area->key_press_left();
 				break;
 
 				case ALLEGRO_KEY_RIGHT:
 				case ALLEGRO_KEY_D:
 					key_status.key_right = true;
+					current_area->key_press_right();
+				break;
+
+				case ALLEGRO_KEY_ENTER:
+				case ALLEGRO_KEY_SPACE:
+					key_status.key_accept = true;
+					current_area->key_press_accept();
+				break;
+
+				case ALLEGRO_KEY_LSHIFT:
+				case ALLEGRO_KEY_RSHIFT:
+					key_status.key_cancel = true;
+					current_area->key_press_cancel();
+				break;
+
+				case ALLEGRO_KEY_LCTRL:
+				case ALLEGRO_KEY_RCTRL:
+					key_status.key_menu = true;
+					current_area->key_press_menu();
+				break;
+
+				case ALLEGRO_KEY_ALT:
+					key_status.key_other = true;
+					current_area->key_press_other();
 				break;
 			}
 		}
@@ -119,21 +161,25 @@ int main(int argc, char** argv)
 				case ALLEGRO_KEY_UP:
 				case ALLEGRO_KEY_W:
 					key_status.key_up = false;
+					current_area->key_release_up();
 				break;
 
 				case ALLEGRO_KEY_DOWN:
 				case ALLEGRO_KEY_S:
 					key_status.key_down = false;
+					current_area->key_release_down();
 				break;
 
 				case ALLEGRO_KEY_LEFT:
 				case ALLEGRO_KEY_A:
 					key_status.key_left = false;
+					current_area->key_release_left();
 				break;
 
 				case ALLEGRO_KEY_RIGHT:
 				case ALLEGRO_KEY_D:
 					key_status.key_right = false;
+					current_area->key_release_right();
 				break;
 
 				case ALLEGRO_KEY_ESCAPE:
@@ -142,21 +188,25 @@ int main(int argc, char** argv)
 
 				case ALLEGRO_KEY_ENTER:
 				case ALLEGRO_KEY_SPACE:
-					current_area->key_press_accept();
+					key_status.key_accept = false;
+					current_area->key_release_accept();
 				break;
 
 				case ALLEGRO_KEY_LSHIFT:
 				case ALLEGRO_KEY_RSHIFT:
-					current_area->key_press_cancel();
+					key_status.key_cancel = false;
+					current_area->key_release_cancel();
 				break;
 
 				case ALLEGRO_KEY_LCTRL:
 				case ALLEGRO_KEY_RCTRL:
-					current_area->key_press_menu();
+					key_status.key_menu = false;
+					current_area->key_release_menu();
 				break;
 
 				case ALLEGRO_KEY_ALT:
-					current_area->key_press_other();
+					key_status.key_other = false;
+					current_area->key_release_other();
 				break;
 				//TODO customize mapping
 			}
@@ -193,18 +243,13 @@ area::~area()
 	}
 }
 
-object* area::new_object(ALLEGRO_BITMAP* sprite, int x, int y, int w, int h)
+object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite)
 {
 	object* newobject = NULL;
 	objectll* newobjectlist = new objectll();
 	if(newobjectlist) {
-		newobject = new object();
+		newobject = new object(x, y, sprite);
 		if(newobject) {
-			newobject->sprite = sprite;
-			newobject->x = x;
-			newobject->y = y;
-			newobject->w = w;
-			newobject->h = h;
 			newobjectlist->obj = newobject;
 			newobjectlist->next = objectlist;
 			objectlist = newobjectlist;
@@ -215,6 +260,11 @@ object* area::new_object(ALLEGRO_BITMAP* sprite, int x, int y, int w, int h)
 	return newobject;
 }
 
+void del_object(object*)
+{
+	//TODO not implemented
+}
+
 //Area default functionality
 void area::draw()
 {
@@ -222,22 +272,35 @@ void area::draw()
 
 	objectll* list = objectlist;
 	while ( list != NULL ) {
-		list->obj->draw();
+		if(list->obj->visible)
+			list->obj->draw();
 		list = list->next;
 	}
 	al_flip_display();
 }
 
 //Object common functionality
-object::object() : 
-	spriteflags(0),
-	sprite(NULL),
-	bx(0), by(0), bw(0), bh(0),
-	x(0), y(0), w(0), h(0)
+object::object() :
+	spriteflags(0), depth(0),
+	sprite(NULL), x(0), y(0),
+	visible(true), solid(true),
+	bx(0), by(0), bw(0), bh(0)
 {}
 
-object::~object()
-{}//TODO cleanup sprite data
+object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
+	spriteflags(0), depth(0),
+	sprite(sprite), x(x), y(y),
+	visible(true), solid(true),
+	bx(0), by(0)
+{
+	if(sprite) {
+		bw = al_get_bitmap_width(sprite);
+		bh = al_get_bitmap_height(sprite);
+	} else {
+		bw = 0;
+		bh = 0;
+	}
+}
 
 void object::sprite_horz_flip()
 {
@@ -277,4 +340,42 @@ bool key_get_hold_left()
 bool key_get_hold_right()
 {
 	return key_status.key_right;
+}
+
+bool key_get_hold_accept()
+{
+	return key_status.key_accept;
+}
+
+bool key_get_hold_cancel()
+{
+	return key_status.key_cancel;
+}
+
+bool key_get_hold_menu()
+{
+	return key_status.key_menu;
+}
+
+bool key_get_hold_other()
+{
+	return key_status.key_other;
+}
+
+//screen size functions:
+int get_screen_w()
+{
+	//TODO, static for now
+	return SCREEN_W;
+}
+
+int get_screen_h()
+{
+	//TODO, static for now
+	return SCREEN_H;
+}
+
+void set_screen_size(int w, int h)
+{
+	//TODO not implemented
 }
