@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 
 ////Screen render size
 const int SCREEN_W = 640;
@@ -10,6 +11,8 @@ const float SCREEN_S = 1.0;
 const bool SCREEN_F = true;
 ////Target Screen refresh rate
 const unsigned int FPS = 60;
+//Bitmap to use when holding ESC to close
+const char QUITIMAGE[] = "quit.png";
 
 ////Misc functions
 //check if key is held:

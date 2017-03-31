@@ -11,6 +11,7 @@ struct holdable_keys {
 	bool key_cancel;
 	bool key_menu;
 	bool key_other;
+	bool key_esc;
 };
 
 holdable_keys key_status = {
@@ -23,6 +24,7 @@ int main(int argc, char** argv)
 	ALLEGRO_DISPLAY* display = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
 	ALLEGRO_TIMER* timer = NULL;
+	ALLEGRO_BITMAP* quitbitmap;
 	bool redraw = true;
 	unsigned int holdesc = 0;
 
@@ -58,14 +60,35 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	event_queue = al_create_event_queue();
-	if(!event_queue) {
-		fprintf(stderr, "failed to create event_queue!\n");
+	if(!al_init_image_addon()) {
+		fprintf(stderr, "failed to load image addon!\n");
 		delete current_area;
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
 	}
+
+	quitbitmap = al_load_bitmap(QUITIMAGE);
+	if(!quitbitmap) {
+		fprintf(stderr, "failed to load quit image!\n");
+		delete current_area;
+		al_shutdown_image_addon();
+		al_destroy_display(display);
+		al_destroy_timer(timer);
+		return -1;
+	}
+
+	event_queue = al_create_event_queue();
+	if(!event_queue) {
+		fprintf(stderr, "failed to create event_queue!\n");
+		delete current_area;
+		al_shutdown_image_addon();
+		al_destroy_bitmap(quitbitmap);
+		al_destroy_display(display);
+		al_destroy_timer(timer);
+		return -1;
+	}
+
 
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -98,6 +121,8 @@ int main(int argc, char** argv)
 				current_area->key_hold_menu();
 			if(key_status.key_other)
 				current_area->key_hold_other();
+			if(key_status.key_esc)
+				holdesc++;
 
 			current_area->loop();
 
@@ -156,7 +181,7 @@ int main(int argc, char** argv)
 				break;
 
 				case ALLEGRO_KEY_ESCAPE:
-					holdesc++;
+					key_status.key_esc = true;
 				break;
 			}
 		}
@@ -211,6 +236,7 @@ int main(int argc, char** argv)
 				//TODO customize mapping
 
 				case ALLEGRO_KEY_ESCAPE:
+					key_status.key_esc = false;
 					holdesc = 0;
 				break;
 
@@ -222,13 +248,20 @@ int main(int argc, char** argv)
 		}
 
 		if(redraw && al_is_event_queue_empty(event_queue)) {
-			//TODO print some text when holdesc > 0
 			redraw = false;
 			current_area->draw();
+
+			if(holdesc>0) {
+				unsigned char tint = (256*holdesc)/FPS;
+				al_draw_tinted_bitmap(quitbitmap, al_map_rgb(tint, tint, tint), 0, 0, 0);
+			}
+			al_flip_display();
 		}
 	}
 
 	delete current_area;
+	al_shutdown_image_addon();
+	al_destroy_bitmap(quitbitmap);
 	al_destroy_timer(timer);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
@@ -437,5 +470,4 @@ void area::draw()
 			list->obj->draw();
 		list = list->next;
 	}
-	al_flip_display();
 }

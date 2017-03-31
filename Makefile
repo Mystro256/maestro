@@ -1,6 +1,6 @@
 CXX=g++
 CFLAGS=-Wall
-LDFLAGS=-lallegro
+LDFLAGS=-lallegro -lallegro_image
 INCLUDE=-I. -I/usr/include
 OUT=game
 SOURCE=*.cpp
