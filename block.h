@@ -30,13 +30,11 @@ public:
 	void key_hold_up() {
 		if(player->y >= 4.0)
 			player->y -= 4.0;
-		player->visible = false;
 	}
 
 	void key_hold_down() {
 		if(player->y <= get_screen_h() - player->bh - 4.0)
 			player->y += 4.0;
-		player->visible = true;
 	}
 
 	void key_hold_left() {
