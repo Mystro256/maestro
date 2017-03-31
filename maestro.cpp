@@ -290,12 +290,12 @@ int get_screen_h()
 
 //screen scale functions:
 //TODO save these changes
-void set_screen_scale(float scalefactor);
+void set_screen_scale(float scalefactor)
 {
 	//TODO not implemented
 }
 
-float get_screen_scale();
+float get_screen_scale()
 {
 	//TODO, static for now
 	return SCREEN_S;
@@ -303,17 +303,17 @@ float get_screen_scale();
 
 //fullscreen functions:
 //TODO save these changes
-void set_fullscreen(bool value);
+void set_fullscreen(bool value)
 {
 	//TODO not implemented
 }
 
-void toggle_fullscreen();
+void toggle_fullscreen()
 {
 	//TODO not implemented
 }
 
-bool get_fullscreen();
+bool get_fullscreen()
 {
 	//TODO, static for now
 	return SCREEN_F;
@@ -357,7 +357,7 @@ void object::sprite_vert_flip()
 void object::set_depth(int newdepth)
 {
 	depth = newdepth;
-	refresh_object_in_draw_order(&this);
+	current_area->refresh_object_in_draw_order(this);
 }
 
 int object::get_depth()
