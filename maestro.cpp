@@ -16,7 +16,7 @@ struct holdable_keys {
 
 holdable_keys key_status = {
 	false, false, false, false,
-	false, false, false, false
+	false, false, false, false, false
 };
 
 int main(int argc, char** argv)
