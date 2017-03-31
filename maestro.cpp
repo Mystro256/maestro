@@ -355,12 +355,13 @@ bool get_fullscreen()
 //Object common functionality
 object::object() :
 	spriteflags(0), depth(0),
+	subsprites(NULL),
 	sprite(NULL), x(0), y(0),
 	visible(true), solid(true),
 	bx(0), by(0), bw(0), bh(0)
 {}
 
-object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
+object::object(int x, int y, ALLEGRO_BITMAP* sprite, subspriteframes* subspritesarray[]) :
 	spriteflags(0), depth(0),
 	sprite(sprite), x(x), y(y),
 	visible(true), solid(true),
@@ -369,10 +370,18 @@ object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
 	if(sprite) {
 		bw = al_get_bitmap_width(sprite);
 		bh = al_get_bitmap_height(sprite);
+		set_subsprites(subspritesarray);
 	} else {
 		bw = 0;
 		bh = 0;
+		subsprites = NULL;
 	}
+}
+
+object::~object()
+{
+	if(subsprites)
+		delete[] subsprites;
 }
 
 void object::sprite_horz_flip()
@@ -385,6 +394,18 @@ void object::sprite_vert_flip()
 {
 	if(sprite)
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
+}
+
+void set_subsprites(subspriteframes* subspritesarray[])
+{
+	if(subspritesarray) {
+		//TODO implement me:
+		subsprites = NULL;
+	} else {
+		if(subsprites)
+			delete[] subsprites;
+		subsprites = NULL;
+	}
 }
 
 void object::set_depth(int newdepth)
@@ -406,6 +427,7 @@ void object::draw()
 	   y < current_area->viewy + get_screen_h() &&
 	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
 	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
+		//TODO implement subsprite handling
 		al_draw_bitmap(sprite, x - current_area->viewx,
 		               y - current_area->viewy, spriteflags);
 	}
