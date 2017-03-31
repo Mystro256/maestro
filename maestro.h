@@ -81,11 +81,12 @@ protected:
 public:
 	////Viewport co-ordinates, size is determined by screen size
 	int viewx, viewy; //default is 0,0
+	ALLEGRO_COLOR backgroundcol;
 
 	virtual ~area();
 
 	////Initializes attributes, should be called first in constructor
-	void init();
+	void init(ALLEGRO_COLOR background = al_map_rgb(255,255,255));
 	////Add new object to area, sprite is optional
 	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
 	////Delete existing object in area

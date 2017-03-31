@@ -406,9 +406,10 @@ void object::draw()
 }
 
 //Area common functionality
-void area::init()
+void area::init(ALLEGRO_COLOR background)
 {
 	objectlist=NULL;
+	backgroundcol = background;
 	viewx = 0;
 	viewy = 0;
 };
@@ -462,7 +463,7 @@ void area::refresh_object_in_draw_order(object* obj)
 void area::draw()
 {
 	//TODO use viewx/y, draw only what's in the viewport
-	al_clear_to_color(al_map_rgb(255,255,255));
+	al_clear_to_color(backgroundcol);
 
 	objectll* list = objectlist;
 	while ( list != NULL ) {
