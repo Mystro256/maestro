@@ -401,8 +401,14 @@ int object::get_depth()
 //Object default functionality
 void object::draw()
 {
-	if(sprite)
-		al_draw_bitmap(sprite, x, y, spriteflags);
+	if(sprite &&
+	   x < current_area->viewx + get_screen_w() &&
+	   y < current_area->viewy + get_screen_h() &&
+	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
+	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
+		al_draw_bitmap(sprite, x - current_area->viewx,
+		               y - current_area->viewy, spriteflags);
+	}
 }
 
 //Area common functionality
@@ -462,7 +468,6 @@ void area::refresh_object_in_draw_order(object* obj)
 //Area default functionality
 void area::draw()
 {
-	//TODO use viewx/y, draw only what's in the viewport
 	al_clear_to_color(backgroundcol);
 
 	objectll* list = objectlist;
