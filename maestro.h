@@ -81,7 +81,7 @@ protected:
 public:
 	////Viewport co-ordinates, size is determined by screen size
 	int viewx, viewy; //default is 0,0
-	ALLEGRO_COLOR backgroundcol;
+	ALLEGRO_COLOR backgroundcol; //default is white, al_map_rgb(255,255,255)
 
 	virtual ~area();
 
