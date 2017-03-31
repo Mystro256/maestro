@@ -35,12 +35,20 @@ void set_fullscreen(bool value);
 void toggle_fullscreen();
 bool get_fullscreen();
 
+//For animation and tiling
+struct subspriteframes {
+	unsigned int x;
+	unsigned int y;
+	unsigned int w;
+	unsigned int h;
+};
+
 ////Object base, can be used or overrided
 class object {
 private:
 	int spriteflags; //for allegro
 	int depth; //draw depth, use "set_depth" to change, default is 0
-	//TODO sprite animation and tiling
+	subspriteframes* subsprites; //For animation and tiles
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL
 	int x, y; //object location, default is 0,0
@@ -52,11 +60,14 @@ public:
 
 	////Constructors/Destructor:
 	object();
-	object(int x, int y, ALLEGRO_BITMAP* sprite);
+	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL,
+	       subspriteframes* subsprites[] = NULL);
 	virtual ~object(){};
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
+	////Change subsprite (animation/tiling), pass NULL to remove:
+	void set_subsprites(subspriteframes* subsprites[]);
 	////Set/get draw depth:
 	//The object with the smallest value is drawn on top
 	void set_depth(int depth);
@@ -68,8 +79,7 @@ public:
 };
 
 ////Linked list for objects
-class objectll {
-public:
+struct objectll {
 	object* obj;
 	objectll* next;
 };
