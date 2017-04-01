@@ -363,18 +363,15 @@ object::object() :
 
 object::object(int x, int y, ALLEGRO_BITMAP* sprite, subspriteframes* subspritesarray[]) :
 	spriteflags(0), depth(0),
+	subsprites(NULL),
 	sprite(sprite), x(x), y(y),
 	visible(true), solid(true),
-	bx(0), by(0)
+	bx(0), by(0), bw(0), bh(0)
 {
 	if(sprite) {
-		bw = al_get_bitmap_width(sprite)/2;
-		bh = al_get_bitmap_height(sprite)/2;
+		bw = al_get_bitmap_width(sprite);
+		bh = al_get_bitmap_height(sprite);
 		set_subsprites(subspritesarray);
-	} else {
-		bw = 0;
-		bh = 0;
-		subsprites = NULL;
 	}
 }
 
