@@ -368,8 +368,8 @@ object::object(int x, int y, ALLEGRO_BITMAP* sprite, subspriteframes* subsprites
 	bx(0), by(0)
 {
 	if(sprite) {
-		bw = al_get_bitmap_width(sprite);
-		bh = al_get_bitmap_height(sprite);
+		bw = al_get_bitmap_width(sprite)/2;
+		bh = al_get_bitmap_height(sprite)/2;
 		set_subsprites(subspritesarray);
 	} else {
 		bw = 0;
@@ -396,7 +396,7 @@ void object::sprite_vert_flip()
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
 }
 
-void set_subsprites(subspriteframes* subspritesarray[])
+void object::set_subsprites(subspriteframes* subspritesarray[])
 {
 	if(subspritesarray) {
 		//TODO implement me:

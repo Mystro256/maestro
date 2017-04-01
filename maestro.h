@@ -62,7 +62,7 @@ public:
 	object();
 	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL,
 	       subspriteframes* subsprites[] = NULL);
-	virtual ~object(){};
+	virtual ~object();
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
