@@ -484,7 +484,7 @@ void area::init(ALLEGRO_COLOR background)
 area::~area()
 {
 	objectll* list = objectlist;
-	while ( list != NULL ) {
+	while (list != NULL) {
 		delete list->obj;
 		objectlist = list->next;
 		delete list;
@@ -494,15 +494,20 @@ area::~area()
 
 object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
 {
-	//TODO automically sort the object list by depth
 	object* newobject = NULL;
 	objectll* newobjectlist = new(nothrow) objectll();
 	if(newobjectlist) {
 		newobject = new(nothrow) object(x, y, sprite, depth);
 		if(newobject) {
+			objectll** list = &objectlist;
+			while(*list != NULL) {
+				if((*list)->obj->get_depth() < depth)
+					break;
+				list = &((*list)->next);
+			}
 			newobjectlist->obj = newobject;
-			newobjectlist->next = objectlist;
-			objectlist = newobjectlist;
+			newobjectlist->next = *list;
+			*list = newobjectlist;
 		} else {
 			delete newobjectlist;
 		}
