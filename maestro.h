@@ -49,6 +49,7 @@ private:
 	int spriteflags; //for allegro
 	int depth; //draw depth, use "set_depth" to change, default is 0
 	subspriteframes* subsprites; //For animation and tiles
+	unsigned int sprite_counter; //For animation
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL
 	int x, y; //object location, default is 0,0
@@ -57,17 +58,24 @@ public:
 	////Collision box, determines collidable area if solid is true:
 	int bx, by; //offset from x and y position, default is 0,0
 	unsigned int bw, bh; //size of box, default is size of initial sprite or 0,0
+	unsigned int current_subsprite //Current subsprite
+	unsigned int animation_rate //use FPS for 1 sec per subsprite, 0 for no animation
 
 	////Constructors/Destructor:
 	object();
-	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL,
-	       subspriteframes* subsprites[] = NULL);
+	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
 	virtual ~object();
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
-	////Change subsprite (animation/tiling), pass NULL to remove:
-	void set_subsprites(subspriteframes* subsprites[]);
+	////Add subsprite (animation/tiling)
+	void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h);
+	////Change subsprite (animation/tiling)
+	//Faster than adding each subsprite individually
+	//subsprites is the pointer to an array, subsprite_count is the array size
+	void set_subsprites(subspriteframes* subsprites, unsigned int subsprite_count = 1);
+	////Remove subsprites (animation/tiling)
+	void remove_subsprites();
 	////Set/get draw depth:
 	//The object with the smallest value is drawn on top
 	void set_depth(int depth);
