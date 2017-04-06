@@ -63,7 +63,7 @@ public:
 
 	////Constructors/Destructor:
 	object();
-	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL);
+	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, int depth = 0);
 	virtual ~object();
 	////Functions to flip sprite:
 	void sprite_horz_flip();
