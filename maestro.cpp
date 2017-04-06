@@ -451,9 +451,24 @@ void object::draw()
 	   y < current_area->viewy + get_screen_h() &&
 	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
 	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
-		//TODO implement subsprite handling
-		al_draw_bitmap(sprite, x - current_area->viewx,
-		               y - current_area->viewy, spriteflags);
+		if(subsprites) {
+			sprite_counter++;
+			if(sprite_counter >= animation_rate) {
+				sprite_counter=0;
+				current_subsprite++;
+			}
+			if(current_subsprite >= sizeof(subsprites))
+				current_subsprite=0;
+			al_draw_bitmap(sprite, subsprites[current_subsprite].x,
+			               subsprites[current_subsprite].y,
+			               subsprites[current_subsprite].w,
+			               subsprites[current_subsprite].h,
+			               x - current_area->viewx,
+			               y - current_area->viewy, spriteflags);
+		} else {
+			al_draw_bitmap(sprite, x - current_area->viewx,
+				       y - current_area->viewy, spriteflags);
+		}
 	}
 }
 
