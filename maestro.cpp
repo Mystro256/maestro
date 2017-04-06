@@ -533,7 +533,28 @@ void area::del_object(object* obj)
 
 bool area::check_collision_at_point(object* obj, int x, int y)
 {
-	//TODO not implemented
+	objectll* list = objectlist;
+	//Obj boundary box
+	int bleft   = x       + obj->bx;
+	int btop    = y       + obj->by;
+	int bright  = bleft   + obj->bw;
+	int bbottom = bbottom + obj->bh;
+	while (list != NULL) {
+		if(obj != list->obj) {
+			//other obj boundary box
+			int bleft2   = list->obj->x + list->obj->bx;
+			int btop2    = list->obj->y + list->obj->by;
+			int bright2  = bleft2       + list->obj->bw;
+			int bbottom2 = bbottom2     + list->obj->bh;
+
+			if(bleft   < bright2  &&
+			   bright  > bleft2   &&
+			   btop    < bbottom2 &&
+			   bbottom > btop2)
+				return true;
+		}
+		list = list->next;
+	}
 	return false;
 }
 
