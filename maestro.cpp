@@ -362,8 +362,8 @@ object::object() :
 	current_subsprite(0), animation_rate(0)
 {}
 
-object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
-	spriteflags(0), depth(0),
+object::object(int x, int y, ALLEGRO_BITMAP* sprite, int depth) :
+	spriteflags(0), depth(depth),
 	subsprites(NULL), sprite_counter(0),
 	sprite(sprite), x(x), y(y),
 	visible(true), solid(true),
@@ -492,13 +492,13 @@ area::~area()
 	}
 }
 
-object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite)
+object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
 {
-	//TODO allow specifying depth, and automically sort the object list by depth
+	//TODO automically sort the object list by depth
 	object* newobject = NULL;
 	objectll* newobjectlist = new(nothrow) objectll();
 	if(newobjectlist) {
-		newobject = new(nothrow) object(x, y, sprite);
+		newobject = new(nothrow) object(x, y, sprite, depth);
 		if(newobject) {
 			newobjectlist->obj = newobject;
 			newobjectlist->next = objectlist;
