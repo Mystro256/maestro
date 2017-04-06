@@ -517,7 +517,18 @@ object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
 
 void area::del_object(object* obj)
 {
-	//TODO not implemented
+	objectll** list = &objectlist;
+	while(*list != NULL) {
+		if((*list)->obj == obj)
+			break;
+		list = &((*list)->next);
+	}
+	if(*list != NULL){
+		*list = &((*list)->next);
+	}
+	//else object not found
+	//delete regardless:
+	delete obj;
 }
 
 bool area::check_collision_at_point(object* obj, int x, int y)
