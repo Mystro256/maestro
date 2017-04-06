@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	}
 
 	//TODO reinterpret cast seems ugly
-	current_area = reinterpret_cast<area*>(new FIRST_AREA());
+	current_area = reinterpret_cast<area*>(new(nothrow) FIRST_AREA());
 	if(!current_area) {
 		fprintf(stderr, "failed to create current area!\n");
 		al_destroy_display(display);
@@ -355,30 +355,30 @@ bool get_fullscreen()
 //Object common functionality
 object::object() :
 	spriteflags(0), depth(0),
-	subsprites(NULL),
+	subsprites(NULL), sprite_counter(0),
 	sprite(NULL), x(0), y(0),
 	visible(true), solid(true),
-	bx(0), by(0), bw(0), bh(0)
+	bx(0), by(0), bw(0), bh(0),
+	current_subsprite(0), animation_rate(0)
 {}
 
-object::object(int x, int y, ALLEGRO_BITMAP* sprite, subspriteframes* subspritesarray[]) :
+object::object(int x, int y, ALLEGRO_BITMAP* sprite) :
 	spriteflags(0), depth(0),
-	subsprites(NULL),
+	subsprites(NULL), sprite_counter(0),
 	sprite(sprite), x(x), y(y),
 	visible(true), solid(true),
-	bx(0), by(0), bw(0), bh(0)
+	bx(0), by(0), bw(0), bh(0),
+	current_subsprite(0), animation_rate(0)
 {
 	if(sprite) {
 		bw = al_get_bitmap_width(sprite);
 		bh = al_get_bitmap_height(sprite);
-		set_subsprites(subspritesarray);
 	}
 }
 
 object::~object()
 {
-	if(subsprites)
-		delete[] subsprites;
+	remove_subsprites();
 }
 
 void object::sprite_horz_flip()
@@ -393,16 +393,43 @@ void object::sprite_vert_flip()
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
 }
 
-void object::set_subsprites(subspriteframes* subspritesarray[])
+void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h)
 {
-	if(subspritesarray) {
-		//TODO implement me:
-		subsprites = NULL;
+	size_t i = 0;
+	if(subsprites) {
+		i = sizeof(subsprites);
+		subspriteframes* old = subsprites;
+		subsprites = new(nothrow) subspriteframes[i+1];
+		if(subsprites) {
+			memcpy(subsprites, old, sizeof(subspriteframes)*i);
+			delete[] old;
+		} else {
+			subsprites = old;
+			return;//Alloc failure
+		}
 	} else {
-		if(subsprites)
-			delete[] subsprites;
-		subsprites = NULL;
+		subsprites = new(nothrow) subsprites[1];
 	}
+	if(subsprites) {
+		subsprites[i].x = x;
+		subsprites[i].y = y;
+		subsprites[i].w = w;
+		subsprites[i].h = h;
+	}
+}
+
+void object::set_subsprites(subspriteframes subspritesarray[], unsigned int subsprite_count)
+{
+	remove_subsprites();
+	subsprites = new(nothrow) subspriteframes[subsprite_count];
+	if(subsprites)
+		memcpy(subsprites, subspritesarray, sizeof(subspriteframes)*subsprite_count);
+}
+
+void remove_subsprites()
+{
+	delete[] subsprites;
+	subsprites = NULL;
 }
 
 void object::set_depth(int newdepth)
@@ -454,9 +481,9 @@ object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite)
 {
 	//TODO allow specifying depth, and automically sort the object list by depth
 	object* newobject = NULL;
-	objectll* newobjectlist = new objectll();
+	objectll* newobjectlist = new(nothrow) objectll();
 	if(newobjectlist) {
-		newobject = new object(x, y, sprite);
+		newobject = new(nothrow) object(x, y, sprite);
 		if(newobject) {
 			newobjectlist->obj = newobject;
 			newobjectlist->next = objectlist;
