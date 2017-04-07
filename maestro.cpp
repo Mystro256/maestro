@@ -1,4 +1,5 @@
 #include "maestro.h"
+#include <new>
 
 area* current_area;
 
@@ -52,7 +53,7 @@ int main(int argc, char** argv)
 	}
 
 	//TODO reinterpret cast seems ugly
-	current_area = reinterpret_cast<area*>(new(nothrow) FIRST_AREA());
+	current_area = reinterpret_cast<area*>(new(std::nothrow) FIRST_AREA());
 	if(!current_area) {
 		fprintf(stderr, "failed to create current area!\n");
 		al_destroy_display(display);
@@ -393,13 +394,13 @@ void object::sprite_vert_flip()
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
 }
 
-void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h)
+void object::add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h)
 {
 	size_t i = 0;
 	if(subsprites) {
 		i = sizeof(subsprites);
 		subspriteframes* old = subsprites;
-		subsprites = new(nothrow) subspriteframes[i+1];
+		subsprites = new(std::nothrow) subspriteframes[i+1];
 		if(subsprites) {
 			memcpy(subsprites, old, sizeof(subspriteframes)*i);
 			delete[] old;
@@ -408,7 +409,7 @@ void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int 
 			return;//Alloc failure
 		}
 	} else {
-		subsprites = new(nothrow) subsprites[1];
+		subsprites = new(std::nothrow) subspriteframes[1];
 	}
 	if(subsprites) {
 		subsprites[i].x = x;
@@ -421,12 +422,12 @@ void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int 
 void object::set_subsprites(subspriteframes subspritesarray[], unsigned int subsprite_count)
 {
 	remove_subsprites();
-	subsprites = new(nothrow) subspriteframes[subsprite_count];
+	subsprites = new(std::nothrow) subspriteframes[subsprite_count];
 	if(subsprites)
 		memcpy(subsprites, subspritesarray, sizeof(subspriteframes)*subsprite_count);
 }
 
-void remove_subsprites()
+void object::remove_subsprites()
 {
 	delete[] subsprites;
 	subsprites = NULL;
@@ -458,13 +459,14 @@ void object::draw()
 				current_subsprite++;
 			}
 			if(current_subsprite >= sizeof(subsprites))
-				current_subsprite=0;
-			al_draw_bitmap(sprite, subsprites[current_subsprite].x,
-			               subsprites[current_subsprite].y,
-			               subsprites[current_subsprite].w,
-			               subsprites[current_subsprite].h,
-			               x - current_area->viewx,
-			               y - current_area->viewy, spriteflags);
+				current_subsprite= 0;
+			al_draw_bitmap_region(sprite,
+                        subsprites[current_subsprite].x,
+                        subsprites[current_subsprite].y,
+                        subsprites[current_subsprite].w,
+                        subsprites[current_subsprite].h,
+                        x - current_area->viewx,
+                        y - current_area->viewy, spriteflags);
 		} else {
 			al_draw_bitmap(sprite, x - current_area->viewx,
 				       y - current_area->viewy, spriteflags);
@@ -495,9 +497,9 @@ area::~area()
 object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
 {
 	object* newobject = NULL;
-	objectll* newobjectlist = new(nothrow) objectll();
+	objectll* newobjectlist = new(std::nothrow) objectll();
 	if(newobjectlist) {
-		newobject = new(nothrow) object(x, y, sprite, depth);
+		newobject = new(std::nothrow) object(x, y, sprite, depth);
 		if(newobject) {
 			objectll** list = &objectlist;
 			while(*list != NULL) {
@@ -524,7 +526,7 @@ void area::del_object(object* obj)
 		list = &((*list)->next);
 	}
 	if(*list != NULL){
-		*list = &((*list)->next);
+		*list = (*list)->next;
 	}
 	//else object not found
 	//delete regardless:
@@ -535,17 +537,17 @@ bool area::check_collision_at_point(object* obj, int x, int y)
 {
 	objectll* list = objectlist;
 	//Obj boundary box
-	int bleft   = x       + obj->bx;
-	int btop    = y       + obj->by;
-	int bright  = bleft   + obj->bw;
-	int bbottom = bbottom + obj->bh;
+	int bleft   = x     + obj->bx;
+	int btop    = y     + obj->by;
+	int bright  = bleft + obj->bw;
+	int bbottom = btop  + obj->bh;
 	while (list != NULL) {
 		if(obj != list->obj) {
 			//other obj boundary box
 			int bleft2   = list->obj->x + list->obj->bx;
 			int btop2    = list->obj->y + list->obj->by;
 			int bright2  = bleft2       + list->obj->bw;
-			int bbottom2 = bbottom2     + list->obj->bh;
+			int bbottom2 = btop2        + list->obj->bh;
 
 			if(bleft   < bright2  &&
 			   bright  > bleft2   &&

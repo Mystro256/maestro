@@ -58,8 +58,8 @@ public:
 	////Collision box, determines collidable area if solid is true:
 	int bx, by; //offset from x and y position, default is 0,0
 	unsigned int bw, bh; //size of box, default is size of initial sprite or 0,0
-	unsigned int current_subsprite //Current subsprite
-	unsigned int animation_rate //use FPS for 1 sec per subsprite, 0 for no animation
+	unsigned int current_subsprite; //Current subsprite
+	unsigned int animation_rate; //use FPS for 1 sec per subsprite, 0 for no animation
 
 	////Constructors/Destructor:
 	object();
