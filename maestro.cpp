@@ -565,7 +565,29 @@ bool area::check_collision_at_point(object* obj, int x, int y)
 
 void area::refresh_object_in_draw_order(object* obj)
 {
-	//TODO not implemented
+	objectll** list = &objectlist;
+	objectll* entry;
+	//Find entry
+	while(*list != NULL) {
+		if((*list)->obj == obj)
+			break;
+		list = &((*list)->next);
+	}
+	//Remove entry
+	if(*list != NULL){
+		entry = *list;
+		*list = (*list)->next;
+	} else {
+		return; //Object is not in the list
+	}
+	//Reinsert and sort entry
+	while(*list != NULL) {
+		if((*list)->obj->get_depth() < depth)
+			break;
+		list = &((*list)->next);
+	}
+	entry->next = *list;
+	*list = newobjectlist;
 }
 
 //Area default functionality
