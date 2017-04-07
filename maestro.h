@@ -39,8 +39,6 @@ bool get_fullscreen();
 struct subspriteframes {
 	unsigned int x;
 	unsigned int y;
-	unsigned int w;
-	unsigned int h;
 };
 
 ////Object base, can be used or overrided
@@ -53,6 +51,7 @@ private:
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL
 	int x, y; //object location, default is 0,0
+	unsigned int w, h; //sprite size, used for subsprites
 	bool visible; //toggle draw function, default is true
 	bool solid; //if it can cause a collision, default is true
 	////Collision box, determines collidable area if solid is true:
@@ -63,13 +62,13 @@ public:
 
 	////Constructors/Destructor:
 	object();
-	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, int depth = 0);
+	object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, unsigned int w = 0, unsigned int h = 0, int depth = 0);
 	virtual ~object();
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
 	////Add subsprite (animation/tiling)
-	void add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h);
+	void add_subsprite(unsigned int x, unsigned int y);
 	////Change subsprite (animation/tiling)
 	//Faster than adding each subsprite individually
 	//subsprites is the pointer to an array, subsprite_count is the array size

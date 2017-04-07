@@ -357,23 +357,27 @@ bool get_fullscreen()
 object::object() :
 	spriteflags(0), depth(0),
 	subsprites(NULL), sprite_counter(0),
-	sprite(NULL), x(0), y(0),
+	sprite(NULL), x(0), y(0), w(0), h(0),
 	visible(true), solid(true),
 	bx(0), by(0), bw(0), bh(0),
 	current_subsprite(0), animation_rate(0)
 {}
 
-object::object(int x, int y, ALLEGRO_BITMAP* sprite, int depth) :
+object::object(int x, int y, ALLEGRO_BITMAP* sprite, unsigned int w, unsigned int h, int depth) :
 	spriteflags(0), depth(depth),
 	subsprites(NULL), sprite_counter(0),
-	sprite(sprite), x(x), y(y),
+	sprite(sprite), x(x), y(y), w(w), h(h),
 	visible(true), solid(true),
 	bx(0), by(0), bw(0), bh(0),
 	current_subsprite(0), animation_rate(0)
 {
 	if(sprite) {
-		bw = al_get_bitmap_width(sprite);
-		bh = al_get_bitmap_height(sprite);
+		if(w == 0)
+			w = al_get_bitmap_width(sprite);
+		if(h == 0)
+			h = al_get_bitmap_height(sprite);
+		bw = w;
+		bh = h;
 	}
 }
 
@@ -394,7 +398,7 @@ void object::sprite_vert_flip()
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
 }
 
-void object::add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsigned int h)
+void object::add_subsprite(unsigned int x, unsigned int y)
 {
 	size_t i = 0;
 	if(subsprites) {
@@ -414,8 +418,6 @@ void object::add_subsprite(unsigned int x, unsigned int y, unsigned int w, unsig
 	if(subsprites) {
 		subsprites[i].x = x;
 		subsprites[i].y = y;
-		subsprites[i].w = w;
-		subsprites[i].h = h;
 	}
 }
 
@@ -463,8 +465,7 @@ void object::draw()
 			al_draw_bitmap_region(sprite,
                         subsprites[current_subsprite].x,
                         subsprites[current_subsprite].y,
-                        subsprites[current_subsprite].w,
-                        subsprites[current_subsprite].h,
+                        w, h,
                         x - current_area->viewx,
                         y - current_area->viewy, spriteflags);
 		} else {
@@ -539,15 +540,15 @@ bool area::check_collision_at_point(object* obj, int x, int y)
 	//Obj boundary box
 	int bleft   = x     + obj->bx;
 	int btop    = y     + obj->by;
-	int bright  = bleft + obj->bw;
-	int bbottom = btop  + obj->bh;
+	int bright  = bleft + obj->w;
+	int bbottom = btop  + obj->h;
 	while (list != NULL) {
 		if(obj != list->obj) {
 			//other obj boundary box
 			int bleft2   = list->obj->x + list->obj->bx;
 			int btop2    = list->obj->y + list->obj->by;
-			int bright2  = bleft2       + list->obj->bw;
-			int bbottom2 = btop2        + list->obj->bh;
+			int bright2  = bleft2       + list->obj->w;
+			int bbottom2 = btop2        + list->obj->h;
 
 			if(bleft   < bright2  &&
 			   bright  > bleft2   &&
