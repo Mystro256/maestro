@@ -517,7 +517,7 @@ object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
 	return newobject;
 }
 
-void area::del_object(object* obj)
+void area::delete_object(object* obj)
 {
 	objectll** list = &objectlist;
 	while(*list != NULL) {

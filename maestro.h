@@ -108,7 +108,7 @@ public:
 	////Add new object to area, sprite is optional
 	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, int depth = 0);
 	////Delete existing object in area
-	void del_object(object*);
+	void delete_object(object*);
 	////Check if object will collide with something at x and y:
 	bool check_collision_at_point(object*, int x, int y);
 	////Should never be called directly
