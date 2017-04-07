@@ -368,16 +368,18 @@ object::object(int x, int y, ALLEGRO_BITMAP* sprite, unsigned int w, unsigned in
 	subsprites(NULL), sprite_counter(0),
 	sprite(sprite), x(x), y(y), w(w), h(h),
 	visible(true), solid(true),
-	bx(0), by(0), bw(0), bh(0),
+	bx(0), by(0), bw(w), bh(h),
 	current_subsprite(0), animation_rate(0)
 {
 	if(sprite) {
-		if(w == 0)
+		if(w == 0) {
 			w = al_get_bitmap_width(sprite);
-		if(h == 0)
+			bw = w;
+		}
+		if(h == 0) {
 			h = al_get_bitmap_height(sprite);
-		bw = w;
-		bh = h;
+			bh = h;
+		}
 	}
 }
 
