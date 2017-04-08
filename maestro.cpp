@@ -333,7 +333,6 @@ int get_screen_h()
 }
 
 //screen scale functions:
-//TODO save these changes
 void set_screen_scale(float scalefactor)
 {
 	if(screen_scale <= 0)
