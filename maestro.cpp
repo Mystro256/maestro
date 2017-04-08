@@ -1,8 +1,10 @@
 #include "maestro.h"
 #include <new>
 
-area* current_area;
-ALLEGRO_DISPLAY* display = NULL;
+static ALLEGRO_DISPLAY* display = NULL;
+static float screen_scale = SCREEN_S;
+
+//TODO save screen settings
 
 struct holdable_keys {
 	bool key_up;
@@ -45,7 +47,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	display = al_create_display(SCREEN_W, SCREEN_H);
+	display = al_create_display(SCREEN_W*screen_scale, SCREEN_H*screen_scale);
 	if(!display) {
 		fprintf(stderr, "failed to create display!\n");
 		al_destroy_timer(timer);
@@ -90,7 +92,6 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
@@ -98,6 +99,15 @@ int main(int argc, char** argv)
 	al_set_target_bitmap(al_get_backbuffer(display));
 	al_clear_to_color(al_map_rgb(0,0,0));
 	al_flip_display();
+
+	if(SCREEN_F) {
+		set_fullscreen(true);
+	} else if(screen_scale != 1.0) {
+		ALLEGRO_TRANSFORM trans;
+		al_identity_transform(&trans);
+		al_scale_transform(&trans, screen_scale, screen_scale);
+		al_use_transform(&trans);
+	}
 
 	al_start_timer(timer);
 
@@ -326,17 +336,26 @@ int get_screen_h()
 //TODO save these changes
 void set_screen_scale(float scalefactor)
 {
-	//TODO not implemented
+	if(screen_scale <= 0)
+		return; //Invalid
+
+	screen_scale = scalefactor;
+
+	if(!get_fullscreen()) {
+		al_resize_display(display, SCREEN_W*scalefactor, SCREEN_H*scalefactor);
+		ALLEGRO_TRANSFORM trans;
+		al_identity_transform(&trans);
+		al_scale_transform(&trans, scalefactor, scalefactor);
+		al_use_transform(&trans);
+	}
 }
 
 float get_screen_scale()
 {
-	//TODO, static for now
-	return SCREEN_S;
+	return screen_scale;
 }
 
 //fullscreen functions:
-//TODO save these changes
 void set_fullscreen(bool value)
 {
 	al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, value);
@@ -470,14 +489,13 @@ void object::draw()
 			if(current_subsprite >= sizeof(subsprites))
 				current_subsprite= 0;
 			al_draw_bitmap_region(sprite,
-                        subsprites[current_subsprite].x,
-                        subsprites[current_subsprite].y,
-                        w, h,
-                        x - current_area->viewx,
-                        y - current_area->viewy, spriteflags);
+			                      subsprites[current_subsprite].x,
+			                      subsprites[current_subsprite].y,
+			                      w, h, x - current_area->viewx,
+			                      y - current_area->viewy, spriteflags);
 		} else {
 			al_draw_bitmap(sprite, x - current_area->viewx,
-				       y - current_area->viewy, spriteflags);
+			               y - current_area->viewy, spriteflags);
 		}
 	}
 }

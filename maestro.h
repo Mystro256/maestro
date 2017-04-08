@@ -147,4 +147,7 @@ public:
 	virtual void key_release_other(){};
 };
 
+//Pointer to current area
+area* current_area;
+
 #include <areas.h>
