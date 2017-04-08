@@ -2,6 +2,7 @@
 #include <new>
 
 area* current_area;
+ALLEGRO_DISPLAY* display = NULL;
 
 struct holdable_keys {
 	bool key_up;
@@ -22,7 +23,6 @@ holdable_keys key_status = {
 
 int main(int argc, char** argv)
 {
-	ALLEGRO_DISPLAY* display = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
 	ALLEGRO_TIMER* timer = NULL;
 	ALLEGRO_BITMAP* quitbitmap;
@@ -339,18 +339,23 @@ float get_screen_scale()
 //TODO save these changes
 void set_fullscreen(bool value)
 {
-	//TODO not implemented
+	al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, value);
+	ALLEGRO_TRANSFORM trans;
+	al_identity_transform(&trans);
+	float scalex = (float)al_get_display_width(display)/SCREEN_W;
+	float scaley = (float)al_get_display_height(display)/SCREEN_H;
+	al_scale_transform(&trans, scalex, scaley);
+	al_use_transform(&trans);
 }
 
 void toggle_fullscreen()
 {
-	//TODO not implemented
+	set_fullscreen(!get_fullscreen());
 }
 
 bool get_fullscreen()
 {
-	//TODO, static for now
-	return SCREEN_F;
+	return al_get_display_flags(display) & ALLEGRO_FULLSCREEN_WINDOW;
 }
 
 //Object common functionality
