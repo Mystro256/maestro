@@ -567,6 +567,7 @@ void area::refresh_object_in_draw_order(object* obj)
 {
 	objectll** list = &objectlist;
 	objectll* entry;
+	int depth = obj->get_depth();
 	//Find entry
 	while(*list != NULL) {
 		if((*list)->obj == obj)
@@ -587,7 +588,7 @@ void area::refresh_object_in_draw_order(object* obj)
 		list = &((*list)->next);
 	}
 	entry->next = *list;
-	*list = newobjectlist;
+	*list = entry;
 }
 
 //Area default functionality
