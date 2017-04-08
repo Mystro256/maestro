@@ -428,17 +428,17 @@ void object::add_subsprite(unsigned int x, unsigned int y)
 	size_t i = 0;
 	if(subsprites) {
 		i = sizeof(subsprites);
-		subspriteframes* old = subsprites;
-		subsprites = new(std::nothrow) subspriteframes[i+1];
+		subspriteframe* old = subsprites;
+		subsprites = new(std::nothrow) subspriteframe[i+1];
 		if(subsprites) {
-			memcpy(subsprites, old, sizeof(subspriteframes)*i);
+			memcpy(subsprites, old, sizeof(subspriteframe)*i);
 			delete[] old;
 		} else {
 			subsprites = old;
 			return;//Alloc failure
 		}
 	} else {
-		subsprites = new(std::nothrow) subspriteframes[1];
+		subsprites = new(std::nothrow) subspriteframe[1];
 	}
 	if(subsprites) {
 		subsprites[i].x = x;
@@ -446,12 +446,12 @@ void object::add_subsprite(unsigned int x, unsigned int y)
 	}
 }
 
-void object::set_subsprites(subspriteframes subspritesarray[], unsigned int subsprite_count)
+void object::set_subsprites(subspriteframe subspritesarray[], unsigned int subsprite_count)
 {
 	remove_subsprites();
-	subsprites = new(std::nothrow) subspriteframes[subsprite_count];
+	subsprites = new(std::nothrow) subspriteframe[subsprite_count];
 	if(subsprites)
-		memcpy(subsprites, subspritesarray, sizeof(subspriteframes)*subsprite_count);
+		memcpy(subsprites, subspritesarray, sizeof(subspriteframe)*subsprite_count);
 }
 
 void object::remove_subsprites()

@@ -2,18 +2,6 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 
-////Screen render size
-const int SCREEN_W = 640;
-const int SCREEN_H = 480;
-//Default Scale factor, not used in fullscreen
-const float SCREEN_S = 1.0;
-//Default fullscreen value
-const bool SCREEN_F = true;
-////Target Screen refresh rate
-const unsigned int FPS = 60;
-//Bitmap to use when holding ESC to close
-const char QUITIMAGE[] = "quit.png";
-
 ////Misc functions
 //check if key is held:
 bool key_get_hold_up();
@@ -36,7 +24,7 @@ void toggle_fullscreen();
 bool get_fullscreen();
 
 //For animation and tiling
-struct subspriteframes {
+struct subspriteframe {
 	unsigned int x;
 	unsigned int y;
 };
@@ -46,7 +34,7 @@ class object {
 private:
 	int spriteflags; //for allegro
 	int depth; //draw depth, use "set_depth" to change, default is 0
-	subspriteframes* subsprites; //For animation and tiles
+	subspriteframe* subsprites; //For animation and tiles
 	unsigned int sprite_counter; //For animation
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL
@@ -72,7 +60,7 @@ public:
 	////Change subsprite (animation/tiling)
 	//Faster than adding each subsprite individually
 	//subsprites is the pointer to an array, subsprite_count is the array size
-	void set_subsprites(subspriteframes* subsprites, unsigned int subsprite_count = 1);
+	void set_subsprites(subspriteframe* subsprites, unsigned int subsprite_count = 1);
 	////Remove subsprites (animation/tiling)
 	void remove_subsprites();
 	////Set/get draw depth:
@@ -150,4 +138,4 @@ public:
 //Pointer to current area
 area* current_area;
 
-#include <areas.h>
+#include <config.h>
