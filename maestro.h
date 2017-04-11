@@ -93,7 +93,7 @@ public:
 	////Initializes attributes, should be called first in constructor
 	void init(ALLEGRO_COLOR background = al_map_rgb(255,255,255));
 	////Add new object to area, sprite is optional
-	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, int depth = 0);
+	object* new_object(int x, int y, ALLEGRO_BITMAP* sprite = NULL, unsigned int w = 0, unsigned int h = 0, int depth = 0);
 	////Delete existing object in area
 	void delete_object(object*);
 	////Check if object will collide with something at x and y:

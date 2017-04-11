@@ -519,12 +519,12 @@ area::~area()
 	}
 }
 
-object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, int depth)
+object* area::new_object(int x, int y, ALLEGRO_BITMAP* sprite, unsigned int w, unsigned int h, int depth)
 {
 	object* newobject = NULL;
 	objectll* newobjectlist = new(std::nothrow) objectll();
 	if(newobjectlist) {
-		newobject = new(std::nothrow) object(x, y, sprite, depth);
+		newobject = new(std::nothrow) object(x, y, sprite, w, h, depth);
 		if(newobject) {
 			objectll** list = &objectlist;
 			while(*list != NULL) {
