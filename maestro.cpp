@@ -464,8 +464,8 @@ int object::get_depth()
 void object::draw()
 {
 	if(sprite &&
-	   x < current_area->viewx + get_screen_w() &&
-	   y < current_area->viewy + get_screen_h() &&
+	   x < current_area->viewx + SCREEN_W &&
+	   y < current_area->viewy + SCREEN_H &&
 	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
 	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
 		if(subsprites) {
