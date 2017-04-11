@@ -12,9 +12,6 @@ bool key_get_hold_accept();
 bool key_get_hold_cancel();
 bool key_get_hold_menu();
 bool key_get_hold_other();
-//screen render size functions:
-int get_screen_h();
-int get_screen_w();
 //screen scale functions:
 void set_screen_scale(float scalefactor);
 float get_screen_scale();

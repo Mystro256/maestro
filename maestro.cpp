@@ -321,17 +321,6 @@ bool key_get_hold_other()
 	return key_status.key_other;
 }
 
-//screen size functions:
-int get_screen_w()
-{
-	return SCREEN_W;
-}
-
-int get_screen_h()
-{
-	return SCREEN_H;
-}
-
 //screen scale functions:
 void set_screen_scale(float scalefactor)
 {
