@@ -32,6 +32,7 @@ private:
 	int spriteflags; //for allegro
 	int depth; //draw depth, use "set_depth" to change, default is 0
 	subspriteframe* subsprites; //For animation and tiles
+	unsigned int subsprites_count; //Number of subsprites
 	unsigned int sprite_counter; //For animation
 public:
 	ALLEGRO_BITMAP* sprite; //Pointer to sprite, default is NULL

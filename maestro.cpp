@@ -368,7 +368,7 @@ bool get_fullscreen()
 //Object common functionality
 object::object() :
 	spriteflags(0), depth(0),
-	subsprites(NULL), sprite_counter(0),
+	subsprites(NULL), subsprites_count(0), sprite_counter(0),
 	sprite(NULL), x(0), y(0), w(0), h(0),
 	visible(true), solid(true),
 	bx(0), by(0), bw(0), bh(0),
@@ -377,7 +377,7 @@ object::object() :
 
 object::object(int x, int y, ALLEGRO_BITMAP* sprite, unsigned int w, unsigned int h, int depth) :
 	spriteflags(0), depth(depth),
-	subsprites(NULL), sprite_counter(0),
+	subsprites(NULL), subsprites_count(0), sprite_counter(0),
 	sprite(sprite), x(x), y(y), w(w), h(h),
 	visible(true), solid(true),
 	bx(0), by(0), bw(w), bh(h),
@@ -414,13 +414,11 @@ void object::sprite_vert_flip()
 
 void object::add_subsprite(unsigned int x, unsigned int y)
 {
-	size_t i = 0;
-	if(subsprites) {
-		i = sizeof(subsprites);
+	if(subsprites_count > 0) {
 		subspriteframe* old = subsprites;
-		subsprites = new(std::nothrow) subspriteframe[i+1];
+		subsprites = new(std::nothrow) subspriteframe[subsprites_count+1];
 		if(subsprites) {
-			memcpy(subsprites, old, sizeof(subspriteframe)*i);
+			memcpy(subsprites, old, sizeof(subspriteframe)*subsprites_count);
 			delete[] old;
 		} else {
 			subsprites = old;
@@ -430,17 +428,20 @@ void object::add_subsprite(unsigned int x, unsigned int y)
 		subsprites = new(std::nothrow) subspriteframe[1];
 	}
 	if(subsprites) {
-		subsprites[i].x = x;
-		subsprites[i].y = y;
+		subsprites[subsprites_count].x = x;
+		subsprites[subsprites_count].y = y;
+		subsprites_count++;
 	}
 }
 
-void object::set_subsprites(subspriteframe subspritesarray[], unsigned int subsprite_count)
+void object::set_subsprites(subspriteframe array[], unsigned int count)
 {
 	remove_subsprites();
-	subsprites = new(std::nothrow) subspriteframe[subsprite_count];
-	if(subsprites)
-		memcpy(subsprites, subspritesarray, sizeof(subspriteframe)*subsprite_count);
+	subsprites = new(std::nothrow) subspriteframe[count];
+	if(subsprites) {
+		memcpy(subsprites, array, sizeof(subspriteframe)*count);
+		subsprites_count = count;
+	}
 }
 
 void object::remove_subsprites()
@@ -468,14 +469,16 @@ void object::draw()
 	   y < current_area->viewy + SCREEN_H &&
 	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
 	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
-		if(subsprites) {
-			sprite_counter++;
-			if(sprite_counter >= animation_rate) {
-				sprite_counter=0;
-				current_subsprite++;
+		if(subsprites_count > 0) {
+			if(animation_rate > 0 && subsprites_count > 1) {
+				sprite_counter++;
+				if(sprite_counter >= animation_rate) {
+					sprite_counter = 0;
+					current_subsprite++;
+				}
+				if(current_subsprite >= subsprites_count)
+					current_subsprite = 0;
 			}
-			if(current_subsprite >= sizeof(subsprites))
-				current_subsprite= 0;
 			al_draw_bitmap_region(sprite,
 			                      subsprites[current_subsprite].x,
 			                      subsprites[current_subsprite].y,
