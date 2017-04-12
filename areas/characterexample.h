@@ -12,19 +12,9 @@ public:
 		init();
 
 		//Load character sprites
-		//charleft = al_load_bitmap("sprites/playerleft.png");
-		//charup   = al_load_bitmap("sprites/playerup.png");
-		//chardown = al_load_bitmap("sprites/playerdown.png");
-		//TODO character sprites don't load, I'll have to debug later
-		charleft = al_create_bitmap(48, 24);
-		al_set_target_bitmap(charleft);
-		al_clear_to_color(al_map_rgb(0, 0, 255));
-		charup = al_create_bitmap(48, 24);
-		al_set_target_bitmap(charup);
-		al_clear_to_color(al_map_rgb(255, 0, 0));
-		chardown = al_create_bitmap(48, 24);
-		al_set_target_bitmap(chardown);
-		al_clear_to_color(al_map_rgb(255, 0, 255));
+		charleft = al_load_bitmap("sprites/playerleft.png");
+		charup   = al_load_bitmap("sprites/playerup.png");
+		chardown = al_load_bitmap("sprites/playerdown.png");
 
 		//Create Player Object with sprite
 		player = new_object(
@@ -32,7 +22,10 @@ public:
 			(SCREEN_H - 24) / 2,
 			chardown, 16, 24);
 		//TODO this seems to have some issues:
-		//player->add_subsprite(0, 0);
+		player->add_subsprite(0, 0);
+		player->add_subsprite(16, 0);
+		player->add_subsprite(0, 0);
+		player->add_subsprite(32, 0);
 	};
 
 	~characterexample() {
@@ -43,38 +36,86 @@ public:
 
 	void key_press_up() {
 		player->sprite = charup;
+		player->animation_rate=FPS/8;
+		if(player->get_sprite_horz_flip())
+			player->sprite_horz_flip();
 	}
 
 	void key_press_down() {
 		player->sprite = chardown;
+		player->animation_rate=FPS/8;
+		if(player->get_sprite_horz_flip())
+			player->sprite_horz_flip();
 	}
 
 	void key_press_left() {
 		player->sprite = charleft;
+		player->animation_rate=FPS/8;
+		if(player->get_sprite_horz_flip())
+			player->sprite_horz_flip();
 	}
 
 	void key_press_right() {
 		//TODO flip me
 		player->sprite = charleft;
+		player->animation_rate=FPS/8;
+		if(!player->get_sprite_horz_flip())
+			player->sprite_horz_flip();
+	}
+
+	void key_release_up() {
+		if(!key_get_hold_down() &&
+		   !key_get_hold_left() &&
+		   !key_get_hold_right()) {
+			player->animation_rate=0;
+			player->current_subsprite = 0;
+		}
+	}
+
+	void key_release_down() {
+		if(!key_get_hold_up() &&
+		   !key_get_hold_left() &&
+		   !key_get_hold_right()) {
+			player->animation_rate=0;
+			player->current_subsprite = 0;
+		}
+	}
+
+	void key_release_left() {
+		if(!key_get_hold_up() &&
+		   !key_get_hold_down() &&
+		   !key_get_hold_right()) {
+			player->animation_rate=0;
+			player->current_subsprite = 0;
+		}
+	}
+
+	void key_release_right() {
+		if(!key_get_hold_up() &&
+		   !key_get_hold_down() &&
+		   !key_get_hold_left()) {
+			player->animation_rate=0;
+			player->current_subsprite = 0;
+		}
 	}
 
 	void key_hold_up() {
-		if(player->y >= 4.0)
-			player->y -= 4.0;
+		if(player->y >= 2.0)
+			player->y -= 2.0;
 	}
 
 	void key_hold_down() {
-		if(player->y <= SCREEN_H - player->h - 4.0)
-			player->y += 4.0;
+		if(player->y <= SCREEN_H - player->h - 2.0)
+			player->y += 2.0;
 	}
 
 	void key_hold_left() {
-		if(player->x >= 4.0)
-			player->x -= 4.0;
+		if(player->x >= 2.0)
+			player->x -= 2.0;
 	}
 
 	void key_hold_right() {
-		if(player->x <= SCREEN_W - player->w - 4.0)
-			player->x += 4.0;
+		if(player->x <= SCREEN_W - player->w - 2.0)
+			player->x += 2.0;
 	}
 };
