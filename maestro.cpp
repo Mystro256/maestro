@@ -54,18 +54,18 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	//TODO reinterpret cast seems ugly
-	current_area = reinterpret_cast<area*>(new(std::nothrow) FIRST_AREA());
-	if(!current_area) {
-		fprintf(stderr, "failed to create current area!\n");
+	if(!al_init_image_addon()) {
+		fprintf(stderr, "failed to load image addon!\n");
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
 	}
 
-	if(!al_init_image_addon()) {
-		fprintf(stderr, "failed to load image addon!\n");
-		delete current_area;
+	//TODO reinterpret cast seems ugly
+	current_area = reinterpret_cast<area*>(new(std::nothrow) FIRST_AREA());
+	if(!current_area) {
+		fprintf(stderr, "failed to create current area!\n");
+		al_shutdown_image_addon();
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
@@ -410,6 +410,16 @@ void object::sprite_vert_flip()
 {
 	if(sprite)
 		spriteflags ^= (int) ALLEGRO_FLIP_VERTICAL;
+}
+
+bool object::get_sprite_horz_flip()
+{
+	return spriteflags & ALLEGRO_FLIP_HORIZONTAL;
+}
+
+bool object::get_sprite_vert_flip()
+{
+	return spriteflags & ALLEGRO_FLIP_VERTICAL;
 }
 
 void object::add_subsprite(unsigned int x, unsigned int y)

@@ -53,6 +53,8 @@ public:
 	////Functions to flip sprite:
 	void sprite_horz_flip();
 	void sprite_vert_flip();
+	bool get_sprite_horz_flip();
+	bool get_sprite_vert_flip();
 	////Add subsprite (animation/tiling)
 	void add_subsprite(unsigned int x, unsigned int y);
 	////Change subsprite (animation/tiling)
