@@ -448,6 +448,9 @@ void object::remove_subsprites()
 {
 	delete[] subsprites;
 	subsprites = NULL;
+	subsprites_count = 0;
+	current_subsprite = 0;
+	sprite_counter = 0;
 }
 
 void object::set_depth(int newdepth)
@@ -464,13 +467,15 @@ int object::get_depth()
 //Object default functionality
 void object::draw()
 {
+	int drawx = x - current_area->viewx;
+	int drawy = y - current_area->viewy;
 	if(sprite &&
-	   x < current_area->viewx + SCREEN_W &&
-	   y < current_area->viewy + SCREEN_H &&
-	   x + al_get_bitmap_width(sprite) > current_area->viewx &&
-	   y + al_get_bitmap_height(sprite) > current_area->viewy) {
-		if(subsprites_count > 0) {
-			if(animation_rate > 0 && subsprites_count > 1) {
+	   drawx < SCREEN_W &&
+	   drawy < SCREEN_H &&
+	   drawx + al_get_bitmap_width(sprite) > 0 &&
+	   drawy + al_get_bitmap_height(sprite) > 0) {
+		if(subsprites) {
+			if(animation_rate != 0 && subsprites_count != 1) {
 				sprite_counter++;
 				if(sprite_counter >= animation_rate) {
 					sprite_counter = 0;
@@ -482,11 +487,9 @@ void object::draw()
 			al_draw_bitmap_region(sprite,
 			                      subsprites[current_subsprite].x,
 			                      subsprites[current_subsprite].y,
-			                      w, h, x - current_area->viewx,
-			                      y - current_area->viewy, spriteflags);
+			                      w, h, drawx, drawy, spriteflags);
 		} else {
-			al_draw_bitmap(sprite, x - current_area->viewx,
-			               y - current_area->viewy, spriteflags);
+			al_draw_bitmap(sprite, drawx, drawy, spriteflags);
 		}
 	}
 }
