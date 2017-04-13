@@ -6,6 +6,7 @@ private:
 	ALLEGRO_BITMAP* charleft;
 	ALLEGRO_BITMAP* charup;
 	ALLEGRO_BITMAP* chardown;
+	int playermovex, playermovey;
 public:
 	characterexample() {
 		//Initialize the area first
@@ -26,6 +27,8 @@ public:
 		player->add_subsprite(16, 0);
 		player->add_subsprite(0, 0);
 		player->add_subsprite(32, 0);
+		playermovex = 0;
+		playermovey = 0;
 	};
 
 	~characterexample() {
@@ -34,88 +37,62 @@ public:
 		al_destroy_bitmap(chardown);
 	}
 
-	void key_press_up() {
-		player->sprite = charup;
-		player->animation_rate=FPS/8;
-		if(player->get_sprite_horz_flip())
-			player->sprite_horz_flip();
-	}
-
-	void key_press_down() {
-		player->sprite = chardown;
-		player->animation_rate=FPS/8;
-		if(player->get_sprite_horz_flip())
-			player->sprite_horz_flip();
-	}
-
-	void key_press_left() {
-		player->sprite = charleft;
-		player->animation_rate=FPS/8;
-		if(player->get_sprite_horz_flip())
-			player->sprite_horz_flip();
-	}
-
-	void key_press_right() {
-		//TODO flip me
-		player->sprite = charleft;
-		player->animation_rate=FPS/8;
-		if(!player->get_sprite_horz_flip())
-			player->sprite_horz_flip();
-	}
-
-	void key_release_up() {
-		if(!key_get_hold_down() &&
-		   !key_get_hold_left() &&
-		   !key_get_hold_right()) {
+	void loop()
+	{
+		if(playermovex != 0 ||
+		   playermovey != 0) {
+			player->x += playermovex;
+			player->y += playermovey;
+			playermovex = 0;
+			playermovey = 0;
+			player->animation_rate=FPS/8;
+		} else {
 			player->animation_rate=0;
 			player->current_subsprite = 0;
 		}
 	}
 
-	void key_release_down() {
-		if(!key_get_hold_up() &&
-		   !key_get_hold_left() &&
-		   !key_get_hold_right()) {
-			player->animation_rate=0;
-			player->current_subsprite = 0;
+	void key_hold_up()
+	{
+		if(!key_get_hold_down()){
+			player->sprite = charup;
+			if(player->get_sprite_horz_flip())
+				player->sprite_horz_flip();
+			if(player->y >= 2.0)
+				playermovey -= 2.0;
 		}
 	}
 
-	void key_release_left() {
-		if(!key_get_hold_up() &&
-		   !key_get_hold_down() &&
-		   !key_get_hold_right()) {
-			player->animation_rate=0;
-			player->current_subsprite = 0;
+	void key_hold_down()
+	{
+		if(!key_get_hold_up()){
+			player->sprite = chardown;
+			if(player->get_sprite_horz_flip())
+				player->sprite_horz_flip();
+			if(player->y <= SCREEN_H - player->h - 2.0)
+				playermovey += 2.0;
 		}
 	}
 
-	void key_release_right() {
-		if(!key_get_hold_up() &&
-		   !key_get_hold_down() &&
-		   !key_get_hold_left()) {
-			player->animation_rate=0;
-			player->current_subsprite = 0;
+	void key_hold_left()
+	{
+		if(!key_get_hold_right()){
+			player->sprite = charleft;
+			if(player->get_sprite_horz_flip())
+				player->sprite_horz_flip();
+			if(player->x >= 2.0)
+				playermovex -= 2.0;
 		}
 	}
 
-	void key_hold_up() {
-		if(player->y >= 2.0)
-			player->y -= 2.0;
-	}
-
-	void key_hold_down() {
-		if(player->y <= SCREEN_H - player->h - 2.0)
-			player->y += 2.0;
-	}
-
-	void key_hold_left() {
-		if(player->x >= 2.0)
-			player->x -= 2.0;
-	}
-
-	void key_hold_right() {
-		if(player->x <= SCREEN_W - player->w - 2.0)
-			player->x += 2.0;
+	void key_hold_right()
+	{
+		if(!key_get_hold_left()){
+			player->sprite = charleft;
+			if(!player->get_sprite_horz_flip())
+				player->sprite_horz_flip();
+			if(player->x <= SCREEN_W - player->w - 2.0)
+				playermovex += 2.0;
+		}
 	}
 };
